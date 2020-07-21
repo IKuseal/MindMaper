@@ -7,10 +7,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.View;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -23,7 +21,8 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
     private CentralNode centralNode;
     private ArrayList<ChildNode> mapNodes;
     private ActionsPanel actionsPanel;
-    private Node processed;
+    private Node processedNode;
+    private boolean isMainTextEdited;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,18 +111,18 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
         actionsPanel.getBtnEditMainText().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = "MainText";
+                isMainTextEdited = true;
                 Node focusedNode = mindMapView.getFocusedNode();
-                WorkActivity.this.processed = focusedNode;
+                WorkActivity.this.processedNode = focusedNode;
 
-                viewModel.editMainText(focusedNode,text);
+                EditTextDialogFragment dialog = new EditTextDialogFragment();
+                Bundle args = new Bundle();
+                args.putString("text",focusedNode.getMainText());
+                dialog.setArguments(args);
+
+                dialog.show(getSupportFragmentManager(), "custom");
 
                 mindMapView.setFocusedNode(null);
-
-                NodeGraphicModule focusedNodeGM = NodeGraphicModule.extractNodeGraphicModule(focusedNode.getGraphicModule());
-                focusedNodeGM.setText(text);
-
-
             }
         });
 
@@ -131,9 +130,9 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
         actionsPanel.getBtnEditAttachedText().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                isMainTextEdited = false;
                 Node focusedNode = mindMapView.getFocusedNode();
-                WorkActivity.this.processed = focusedNode;
+                WorkActivity.this.processedNode = focusedNode;
 
                 EditTextDialogFragment dialog = new EditTextDialogFragment();
                 Bundle args = new Bundle();
@@ -148,9 +147,12 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
         });
     }
 
-
     @Override
     public void receiveEditingTextResult(String text) {
-        viewModel.edtiAttachedText(WorkActivity.this.processed,text);
+        if(isMainTextEdited){
+            viewModel.editMainText(processedNode,text);
+        }
+        else viewModel.edtiAttachedText(WorkActivity.this.processedNode,text);
+
     }
 }

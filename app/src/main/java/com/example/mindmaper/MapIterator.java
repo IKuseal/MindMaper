@@ -5,20 +5,20 @@ import java.util.ArrayList;
 
 public class MapIterator {
     ArrayDeque<ChildNode> processed;
-    BrenchIterator brenchIterator;
+    BranchIterator branchIterator;
     public MapIterator(CentralNode centralNode){
         initiate(centralNode);
     }
     public boolean atEnd(){
-        if(brenchIterator == null) return true;
-        return (processed.isEmpty() && brenchIterator.atEnd());
+        if(branchIterator == null) return true;
+        return (processed.isEmpty() && branchIterator.atEnd());
     }
     public ChildNode next(){
         if(atEnd()) return null;
-        if(brenchIterator.atEnd()){
-            brenchIterator.setNewBrench(processed.pollFirst());
+        if(branchIterator.atEnd()){
+            branchIterator.setNewBrench(processed.pollFirst());
         }
-        return brenchIterator.next();
+        return branchIterator.next();
     }
 
     public void setNewMap(CentralNode centralNode){
@@ -35,8 +35,8 @@ public class MapIterator {
         if(!temp.isEmpty()) processed.addAll(temp);
 
         if(!processed.isEmpty()) {
-            if (brenchIterator == null) brenchIterator = new BrenchIterator(processed.pollFirst());
-            else brenchIterator.setNewBrench(processed.pollFirst());
+            if (branchIterator == null) branchIterator = new BranchIterator(processed.pollFirst());
+            else branchIterator.setNewBrench(processed.pollFirst());
         }
     }
 }

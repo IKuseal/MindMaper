@@ -3,9 +3,9 @@ package com.example.mindmaper;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-public class BrenchIterator {
+public class BranchIterator {
     ArrayDeque<ChildNode> processed;
-    public BrenchIterator(ChildNode node){
+    public BranchIterator(ChildNode node){
         initiate(node);
     }
     public boolean atEnd(){
