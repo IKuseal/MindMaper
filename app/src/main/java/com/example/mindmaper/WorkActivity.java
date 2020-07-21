@@ -33,14 +33,6 @@ public class WorkActivity extends AppCompatActivity {
 
         mindMapView.setMinimumWidth(minSize.first);
         mindMapView.setMinimumHeight(minSize.second);
-        mindMapView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                Log.d("Kl","Wass");
-                mindMapView.setFocusableInTouchMode(true);
-                mindMapView.setFocusable(true);
-            }
-        });
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
@@ -84,17 +76,6 @@ public class WorkActivity extends AppCompatActivity {
     private void doBaseThingsWithNode(Node node){
         final NodeGraphicModule nodeGM = new NodeGraphicModule(this,node);
         node.setGraphicModule(nodeGM);
-        nodeGM.setFocusableInTouchMode(true);
-        nodeGM.setFocusable(true);
-//        nodeGM.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                nodeGM.setText("Focused");
-//                mindMapView.requestLayout();
-//                Log.d("Kl","Was");
-//            }
-//        });
-
     }
 
     private Pair<Integer,Integer> getWorkFieldSize(){

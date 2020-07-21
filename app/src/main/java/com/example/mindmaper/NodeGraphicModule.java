@@ -9,7 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 public class NodeGraphicModule extends AppCompatTextView{
     private int familySize = 0;
-    Node owner;
+    private Node owner;
     private boolean isOnTheRightSide;
 
     public NodeGraphicModule(Context context){
@@ -64,5 +64,7 @@ public class NodeGraphicModule extends AppCompatTextView{
 
     }
 
-
+    public Node getOwner() {
+        return owner;
+    }
 }

@@ -25,7 +25,10 @@ public class MindMapView extends AbsoluteLayout {
     private CentralNode centralNode;
     private ArrayList<ChildNode> mapNodes;
     private boolean isOnMeasureFirsTime = true;
+
     private ActionsPanel actionsPanel;
+    private int actonsPanelYGap = 40;
+    Node focusedNode;
 
     final int yGap = 20;
     final int xGap = 80;
@@ -35,19 +38,14 @@ public class MindMapView extends AbsoluteLayout {
         gestureDetector = new GestureDetector(context, new MyGestureListener());
         actionsPanel = new ActionsPanel(context);
         addView(actionsPanel);
+        actionsPanel.setVisibility(GONE);
     }
     public MindMapView(Context context, AttributeSet attributeSet){
         super(context,attributeSet);
         gestureDetector = new GestureDetector(context, new MyGestureListener());
         actionsPanel = new ActionsPanel(context);
         addView(actionsPanel);
-        actionsPanel.getBtnDel().setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("Kl","Click");
-            }
-
-        });
+        actionsPanel.setVisibility(GONE);
 
     }
 
@@ -60,7 +58,7 @@ public class MindMapView extends AbsoluteLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d("Ku","OnMeasure");
+        Log.d("Ku","OnMeasureBeg");
         if(operation == null || isOnMeasureFirsTime == false) {
             Log.d("Ku", "operation.first = null");
             setMeasuredDimension(getMeasuredWidth(),getMeasuredHeight());
@@ -92,6 +90,7 @@ public class MindMapView extends AbsoluteLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.d("Ku","onLayoutBegin");
         if(operation == null) return;
 
         actionsPanel.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
@@ -163,12 +162,12 @@ public class MindMapView extends AbsoluteLayout {
         Log.d("Ku","OnLayoutDone");
     }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event)
-//    {
-//        if (gestureDetector.onTouchEvent(event)) return true;
-//        return true;
-//    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        if (gestureDetector.onTouchEvent(event)) return true;
+        return true;
+    }
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener
     {
         @Override
@@ -178,17 +177,23 @@ public class MindMapView extends AbsoluteLayout {
             return true;
         }
     }
-    public void setMap(CentralNode centralNode,ArrayList<ChildNode> mapNodes){
+    public void setMap(final CentralNode centralNode, final ArrayList<ChildNode> mapNodes){
         Log.d("Ku","SetMapStarted ");
         this.centralNode = centralNode;
         this.mapNodes = mapNodes;
         this.operation = new Pair<>(MainViewModel.Operation.MapOpened,null);
 
+        getNodeGraphicModule(centralNode).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setFocusedNode(centralNode);
+            }
+        });
         for (int i = 0; i < mapNodes.size(); i++) {
             getNodeGraphicModule(mapNodes.get(i)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("Kl","Click");
+                    setFocusedNode(((NodeGraphicModule)view).getOwner());
                 }
             });
         }
@@ -341,5 +346,35 @@ public class MindMapView extends AbsoluteLayout {
         }
 
         return new Pair<>(xDistMax,yDistMax);
+    }
+
+    public void clearFocusedNode(){
+
+    }
+
+    public Node getFocusedNode() {
+        return focusedNode;
+    }
+
+    public void setFocusedNode(Node focusedNode) {
+        this.focusedNode = focusedNode;
+        if(focusedNode == null){
+            actionsPanel.setVisibility(GONE);
+        }
+        else{
+            NodeGraphicModule focusedNodeGM = getNodeGraphicModule(focusedNode);
+            actionsPanel.setVisibility(VISIBLE);
+            actionsPanel.bringToFront();
+
+            if(focusedNode == centralNode) actionsPanel.setCentralNodeActions();
+            else actionsPanel.setChildNodeActions();
+
+            int left = focusedNodeGM.getLeft() - (actionsPanel.getMeasuredWidth()-focusedNodeGM.getMeasuredWidth())/2;
+            int top = focusedNodeGM.getTop() - actionsPanel.getMeasuredHeight() - actonsPanelYGap;
+
+            actionsPanel.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
+            actionsPanel.layout(left,top,
+                    left + actionsPanel.getMeasuredWidth(),top+actionsPanel.getMeasuredHeight());
+        }
     }
 }
