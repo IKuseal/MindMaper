@@ -36,16 +36,10 @@ public class MindMapView extends AbsoluteLayout {
     public MindMapView(Context context){
         super(context);
         gestureDetector = new GestureDetector(context, new MyGestureListener());
-        actionsPanel = new ActionsPanel(context);
-        addView(actionsPanel);
-        actionsPanel.setVisibility(GONE);
     }
     public MindMapView(Context context, AttributeSet attributeSet){
         super(context,attributeSet);
         gestureDetector = new GestureDetector(context, new MyGestureListener());
-        actionsPanel = new ActionsPanel(context);
-        addView(actionsPanel);
-        actionsPanel.setVisibility(GONE);
 
     }
 
@@ -165,6 +159,8 @@ public class MindMapView extends AbsoluteLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+        Log.d("Ki","OnTouchEvent");
+        setFocusedNode(null);
         if (gestureDetector.onTouchEvent(event)) return true;
         return true;
     }
@@ -348,10 +344,6 @@ public class MindMapView extends AbsoluteLayout {
         return new Pair<>(xDistMax,yDistMax);
     }
 
-    public void clearFocusedNode(){
-
-    }
-
     public Node getFocusedNode() {
         return focusedNode;
     }
@@ -375,6 +367,22 @@ public class MindMapView extends AbsoluteLayout {
             actionsPanel.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
             actionsPanel.layout(left,top,
                     left + actionsPanel.getMeasuredWidth(),top+actionsPanel.getMeasuredHeight());
+        }
+    }
+
+    public void setActionsPanel(ActionsPanel actionsPanel) {
+        this.actionsPanel = actionsPanel;
+        addView(actionsPanel);
+        actionsPanel.setVisibility(GONE);
+    }
+
+    public void update(Pair<MainViewModel.Operation,Node> operation){
+        this.operation = operation;
+
+        switch (this.operation.first){
+            case MainTextEdited:{
+                Log.d("Kq"," Update MainText ");
+            }
         }
     }
 }

@@ -17,11 +17,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
-public class WorkActivity extends AppCompatActivity {
+public class WorkActivity extends AppCompatActivity implements EditTextDialogFragment.EditingTextResultReceiver {
     private MainViewModel viewModel;
     private MindMapView mindMapView;
     private CentralNode centralNode;
     private ArrayList<ChildNode> mapNodes;
+    private ActionsPanel actionsPanel;
+    private Node processed;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,16 +36,17 @@ public class WorkActivity extends AppCompatActivity {
         mindMapView.setMinimumWidth(minSize.first);
         mindMapView.setMinimumHeight(minSize.second);
 
+        initializeActionsPanel();
+
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         viewModel.getLastOperation().observe(this, new Observer<Pair<MainViewModel.Operation, Node>>() {
             @Override
-            public void onChanged(Pair<MainViewModel.Operation, Node> operationNodePair) {
+            public void onChanged(Pair<MainViewModel.Operation, Node> operation) {
                 //Log.d("Ku",operationNodePair.first.name());
-                MainViewModel.Operation operation = operationNodePair.first;
-                Node node = operationNodePair.second;
+                Node node = operation.second;
 
-                switch (operation){
+                switch (operation.first){
                     case MapOpened:{
                         centralNode = viewModel.getCentralNode();
                         mapNodes = viewModel.getMapNodes();
@@ -54,13 +57,17 @@ public class WorkActivity extends AppCompatActivity {
                             ChildNode childNode = iterator.next();
                             doBaseThingsWithNode(childNode);
                         }
-
-
                         mindMapView.setMap(centralNode,mapNodes);
                         //почему 2 раза?
                         Log.d("Ku","MapOpened in OnChangedOperation");
                         break;
                     }
+
+                    case MainTextEdited:{
+                        NodeGraphicModule.extractNodeGraphicModule(node.getGraphicModule()).setText(node.getMainText());
+                        mindMapView.update(operation);
+                    }
+
                     default:{
                         Log.d("Ku","Something Wrong in OnChanged Last");
                     }
@@ -95,5 +102,55 @@ public class WorkActivity extends AppCompatActivity {
         if (resourceId > 0) { result = getResources().getDimensionPixelSize(resourceId); }
 
         return new Pair<>(metricsB.widthPixels,metricsB.heightPixels-mActionBarSize-result);
+    }
+
+    private void initializeActionsPanel(){
+        actionsPanel = new ActionsPanel(this);
+        mindMapView.setActionsPanel(actionsPanel);
+
+        // btnEditMainText
+        actionsPanel.getBtnEditMainText().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = "MainText";
+                Node focusedNode = mindMapView.getFocusedNode();
+                WorkActivity.this.processed = focusedNode;
+
+                viewModel.editMainText(focusedNode,text);
+
+                mindMapView.setFocusedNode(null);
+
+                NodeGraphicModule focusedNodeGM = NodeGraphicModule.extractNodeGraphicModule(focusedNode.getGraphicModule());
+                focusedNodeGM.setText(text);
+
+
+            }
+        });
+
+        //btnEditAttachedText
+        actionsPanel.getBtnEditAttachedText().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Node focusedNode = mindMapView.getFocusedNode();
+                WorkActivity.this.processed = focusedNode;
+
+                EditTextDialogFragment dialog = new EditTextDialogFragment();
+                Bundle args = new Bundle();
+                args.putString("text",focusedNode.getAttachedText());
+                dialog.setArguments(args);
+
+                dialog.show(getSupportFragmentManager(), "custom");
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+    }
+
+
+    @Override
+    public void receiveEditingTextResult(String text) {
+        viewModel.edtiAttachedText(WorkActivity.this.processed,text);
     }
 }

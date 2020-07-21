@@ -12,7 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
-    public enum Operation{ MapOpened};
+    public enum Operation{ MapOpened,MainTextEdited};
 
     private ArrayList<ChildNode> mapNodes;
     private HashMap<Integer,Style> styles;
@@ -204,4 +204,13 @@ public class MainViewModel extends ViewModel {
         getLastOperation().setValue(new Pair<Operation,Node>(Operation.MapOpened,null));
     }
 
+    public void editMainText(Node node,String text){
+        node.setMainText(text);
+
+        getLastOperation().setValue(new Pair<Operation,Node>(Operation.MainTextEdited,node));
+    }
+
+    public void edtiAttachedText(Node node,String text){
+        node.setAttachedText(text);
+    }
 }
