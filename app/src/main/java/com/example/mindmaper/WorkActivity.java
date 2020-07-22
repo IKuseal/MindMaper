@@ -1,21 +1,29 @@
 package com.example.mindmaper;
 
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
 public class WorkActivity extends AppCompatActivity implements EditTextDialogFragment.EditingTextResultReceiver {
+    public static final String SHOW_MAPS_MANAGER ="SHOW_MAPS_MANAGER";
+    public static final int REQUEST_CODE_ON_SHOW_MAPS_MANAGER = 10;
+
     private MainViewModel viewModel;
     private MindMapView mindMapView;
     private CentralNode centralNode;
@@ -27,6 +35,9 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         mindMapView = (MindMapView)findViewById(R.id.mindMapView);
         Pair<Integer,Integer> minSize = getWorkFieldSize();
@@ -100,6 +111,40 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
         viewModel.openMap();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id){
+            case R.id.action_open_mapsManager :{
+                Intent intent = new Intent(SHOW_MAPS_MANAGER);
+                startActivityForResult(intent,REQUEST_CODE_ON_SHOW_MAPS_MANAGER);
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == REQUEST_CODE_ON_SHOW_MAPS_MANAGER){
+            if(resultCode==RESULT_OK){
+                int mapId = data.getIntExtra("id",-1);
+                Log.d("SSS",mapId + " " + "MapId");
+            }
+
+        }
+        else{
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
     private void doBaseThingsWithNode(Node node){
         NodeGraphicModule nodeGM = new NodeGraphicModule(this,node);
@@ -290,4 +335,6 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
         else viewModel.edtiAttachedText(WorkActivity.this.processedNode,text);
 
     }
+
+
 }
