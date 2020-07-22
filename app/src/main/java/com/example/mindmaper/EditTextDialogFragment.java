@@ -41,7 +41,11 @@ public class EditTextDialogFragment extends DialogFragment {
         builder.setView(mainView);
 
         Bundle args = getArguments();
-        String text = args.getString("text");
+        String text = "";
+
+        if(args != null){
+            text = args.getString("text");
+        }
 
         this.edtDialog = (EditText) mainView.findViewById(R.id.edtDialog);
         this.edtDialog.setText(text);

@@ -16,7 +16,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class MapsManagerActivity extends AppCompatActivity {
+public class MapsManagerActivity extends AppCompatActivity implements EditTextDialogFragment.EditingTextResultReceiver {
     private MapsManagerViewModel viewModel;
     private MapsListViewAdapter adapter;
     @Override
@@ -52,9 +52,19 @@ public class MapsManagerActivity extends AppCompatActivity {
             @Override
             public void onChanged(ArrayList<Map> maps) {
                 Log.d("SSS","OnChanged ");
-                adapter.clear();
-                adapter.addAll(maps);
-                adapter.notifyDataSetChanged();
+                if(viewModel.isMapWasCreated()){
+                    Map map = maps.get(maps.size()-1);
+                    Intent data = new Intent();
+                    data.putExtra("id", map.getId());
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
+                else{
+                    adapter.clear();
+                    adapter.addAll(maps);
+                    adapter.notifyDataSetChanged();
+
+                }
             }
         });
 
@@ -75,10 +85,20 @@ public class MapsManagerActivity extends AppCompatActivity {
         switch(id){
             case R.id.action_create_map :{
 
+                EditTextDialogFragment dialog = new EditTextDialogFragment();
+                Bundle args = new Bundle();
+
+                dialog.show(getSupportFragmentManager(), "custom");
 
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void receiveEditingTextResult(String text) {
+
+        viewModel.createMap(text);
     }
 }

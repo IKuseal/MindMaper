@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel;
 
 public class MapsManagerViewModel extends ViewModel {
     private int id = 0;
+    private boolean isMapWasCreated = false;
 
     private MutableLiveData<ArrayList<Map>> maps = new MutableLiveData<>();
 
@@ -49,4 +50,16 @@ public class MapsManagerViewModel extends ViewModel {
         temporaryGenerationMap();
     }
 
+    public void createMap(String name){
+        ++id;
+        Map map = new Map(id,name);
+        ArrayList mapsArray = getMaps().getValue();
+        mapsArray.add(map);
+        isMapWasCreated = true;
+        getMaps().setValue(mapsArray);
+    }
+
+    public boolean isMapWasCreated() {
+        return isMapWasCreated;
+    }
 }

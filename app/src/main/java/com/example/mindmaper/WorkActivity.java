@@ -134,18 +134,16 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-//        if(requestCode==REQUEST_ACCESS_TYPE){
-//            if(resultCode==RESULT_OK){
-//                String accessMessage = data.getStringExtra(ACCESS_MESSAGE);
-//                textView.setText(accessMessage);
-//            }
-//            else{
-//                textView.setText("Ошибка доступа");
-//            }
-//        }
-//        else{
-//            super.onActivityResult(requestCode, resultCode, data);
-//        }
+        if(requestCode == REQUEST_CODE_ON_SHOW_MAPS_MANAGER){
+            if(resultCode==RESULT_OK){
+                int mapId = data.getIntExtra("id",-1);
+                Log.d("SSS",mapId + " " + "MapId");
+            }
+
+        }
+        else{
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void doBaseThingsWithNode(Node node){
