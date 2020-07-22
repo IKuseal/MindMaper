@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">MindMaper</string>
+    <string name="copy">Copy</string>
+    <string name="add_up">add up</string>
+    <string name="child">child</string>
+    <string name="add_down">add down</string>
+    <string name="del">del</string>
+    <string name="left_child">left child</string>
+    <string name="right_child">right child</string>
+    <string name="edit">edit</string>
+    <string name="note">note</string>
+    <string name="style">style</string>
+    <string name="paste">Paste</string>
+    <string name="cut">cut</string>
 </resources>
