@@ -172,6 +172,10 @@ public class MindMapView extends AbsoluteLayout {
             }
         }
 
+        if(operation.first == MainViewModel.Operation.NodeAdded){
+            focusedNode = operation.second;
+            actionsPanel.getBtnEditMainText().callOnClick();
+        }
 
         isOnMeasureFirsTime = true;
         operation = null;
@@ -674,18 +678,6 @@ public class MindMapView extends AbsoluteLayout {
                 shiftBranch(children.get(i),shift,Direction.UP,true);
             }
         }
-
-//        ArrayList<Integer> oldChildrenY = new ArrayList<>(children.size());
-//        for (int i = 0; i < children.size(); i++) {
-//            oldChildrenY.set(i,getNodeGraphicModule(children.get(i)).getTop());
-//        }
-
-//        arrangeChildren(children,isOnTheRightSide);
-
-//        for (int i = 0; i < children.size(); i++) {
-//            int shift = oldChildrenY.get(i) - getNodeGraphicModule(children.get(i)).getTop();
-//            if(shift < 0) shiftBranch(children.get(i),Math.abs(shift),Direction.DOWN,false);
-//        }
 
         if(parent == centralNode) return;
         //rearrangeBranch по y

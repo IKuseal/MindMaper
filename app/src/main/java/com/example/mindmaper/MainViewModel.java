@@ -20,6 +20,7 @@ public class MainViewModel extends ViewModel {
     private ArrayList<ChildNode> mapNodes;
     private HashMap<Integer,Style> styles;
     private CentralNode centralNode;
+    private ChildNode copiedNode;
 
     private MutableLiveData<Pair<Operation,Node>> lastOperation = new MutableLiveData<>();
 
@@ -266,6 +267,19 @@ public class MainViewModel extends ViewModel {
         while (!iterator.atEnd()){
             mapNodes.remove(iterator.next());
         }
+
+        lastOperation.setValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
+    }
+
+    public void cutNode(ChildNode node){
+        node.getParent().delSon(node);
+
+        BranchIterator iterator = new BranchIterator(node);
+        while (!iterator.atEnd()){
+            mapNodes.remove(iterator.next());
+        }
+
+        copiedNode = node;
 
         lastOperation.setValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
     }

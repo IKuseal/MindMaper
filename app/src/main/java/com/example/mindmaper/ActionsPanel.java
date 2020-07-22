@@ -39,6 +39,7 @@ public class ActionsPanel extends FrameLayout {
         btnDownBrother.setVisibility(GONE);
         btnUpBrother.setVisibility(GONE);
         btnDel.setVisibility(GONE);
+        btnCut.setVisibility(GONE);
 
         btnLeftSon.setVisibility(VISIBLE);
         btnRightSon.setVisibility(VISIBLE);
@@ -49,6 +50,7 @@ public class ActionsPanel extends FrameLayout {
         btnDownBrother.setVisibility(VISIBLE);
         btnUpBrother.setVisibility(VISIBLE);
         btnDel.setVisibility(VISIBLE);
+        btnCut.setVisibility(VISIBLE);
 
         btnLeftSon.setVisibility(GONE);
         btnRightSon.setVisibility(GONE);

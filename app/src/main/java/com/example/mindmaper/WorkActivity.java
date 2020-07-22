@@ -234,6 +234,19 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
             }
         });
 
+        actionsPanel.getBtnCut().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+                processedNode = focusedNode;
+
+                viewModel.cutNode(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
     }
 
     @Override
