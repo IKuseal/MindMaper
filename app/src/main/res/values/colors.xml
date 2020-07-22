@@ -5,4 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="panel">#FAAD36</color>
     <color name="black">#000000</color>
+
+    <color name="node">#00FF00</color>
+    <color name="pressedNode">#00C000</color>
 </resources>
