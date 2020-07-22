@@ -2,20 +2,17 @@ package com.example.mindmaper;
 
 import android.util.Log;
 import android.util.Pair;
-import android.widget.TextView;
 
-import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
     private int id;
 
-    public enum Operation{ MapOpened,MainTextEdited,NodeAdded,NodeDeled};
+    public enum Operation{ MapOpened,MainTextEdited,NodeAdded,NodeDeled,PastingNode};
 
     private ArrayList<ChildNode> mapNodes;
     private HashMap<Integer,Style> styles;
@@ -282,5 +279,40 @@ public class MainViewModel extends ViewModel {
         copiedNode = node;
 
         lastOperation.setValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
+    }
+
+    public void copyNode(ChildNode node){
+        HashMap<Integer,ChildNode> newParents = new HashMap<>();
+        BranchIterator iterator = new BranchIterator(node);
+
+        ++id;
+        ChildNode nodeCopy = new ChildNode(id,node.getStyleId(),node.getMainText(),node.getAttachedText());
+        newParents.put(node.getNodeId(),nodeCopy);
+        iterator.next();
+        while (!iterator.atEnd()){
+            ChildNode childNode = iterator.next();
+            ++id;
+            ChildNode copy = new ChildNode(id,childNode.getStyleId(),childNode.getMainText(),childNode.getAttachedText());
+            newParents.get(childNode.getParent().getNodeId()).addSon(copy);
+            newParents.put(childNode.getNodeId(),copy);
+        }
+
+        copiedNode = nodeCopy;
+    }
+
+    public void startPastingNode(Node node){
+        if(copiedNode == null) return;
+        ChildNode temp = copiedNode;
+        copyNode(copiedNode);
+
+        if(node == centralNode) centralNode.addRightSon(temp);
+        else ((ChildNode)node).addSon(temp);
+
+        BranchIterator iterator = new BranchIterator(temp);
+        while (!iterator.atEnd()){
+            mapNodes.add(iterator.next());
+        }
+
+        getLastOperation().setValue(new Pair<Operation, Node>(Operation.PastingNode,temp));
     }
 }

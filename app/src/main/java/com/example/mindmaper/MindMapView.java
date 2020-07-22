@@ -83,6 +83,10 @@ public class MindMapView extends AbsoluteLayout {
                 afterNodeDeleted();
                 break;
             }
+            case PastingNode:{
+                pastNode((ChildNode)node);
+                break;
+            }
         }
         //finding measuredDim of mindMapView
         Pair<Integer,Integer> maxDistances = findMaxDistances();
@@ -415,6 +419,19 @@ public class MindMapView extends AbsoluteLayout {
 
                 this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
             }
+            case PastingNode:{
+                BranchIterator iterator = new BranchIterator((ChildNode)operation.second);
+                while(!iterator.atEnd()){
+                    ChildNode childNode = iterator.next();
+                    setOnFocusListenerForNode(childNode);
+                    addNodeOnMap(childNode);
+                }
+
+
+                this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
+                Log.d("QQ","WasHere");
+                break;
+            }
         }
     }
 
@@ -691,5 +708,67 @@ public class MindMapView extends AbsoluteLayout {
 
 
         rearrangeBranchAfterAncestorFamilySizeChanged(childParent,familySizeChange);
+    }
+
+    private void pastNode(ChildNode pastedNode){
+        NodeGraphicModule pastedNodeGM = getNodeGraphicModule(pastedNode);
+        measureNodes(pastedNode);
+        calculateNodesFamiliySize(pastedNode);
+
+        Node parent = pastedNode.getParent();
+        ChildNode childParent = pastedNode;
+        NodeGraphicModule parentGM = getNodeGraphicModule(parent);
+        ArrayList<ChildNode> children;
+        if(parent == centralNode){
+            if(pastedNodeGM.getIsOnTheRightSide())
+                children = centralNode.getRightChildren();
+            else children = centralNode.getLeftChildren();
+        }
+        else{
+            childParent = (ChildNode)parent;
+            children = childParent.getChildren();
+        }
+
+        int index = children.indexOf(pastedNode);
+
+        //нахождение позиции x
+        int x = 0;
+
+        if(pastedNodeGM.getIsOnTheRightSide()){
+            x = parentGM.getLeft() + parentGM.getMeasuredWidth()+xGap;
+        }
+        else{
+            x = parentGM.getLeft() - xGap;
+        }
+
+
+        //нахождение y позиции
+        int y = 0;
+        if(children.size() == 1){
+            y = parentGM.getTop() + parentGM.getMeasuredHeight()/2;
+        }
+        else if(index+1<children.size()){
+            ChildNode brotherDown = children.get(index+1);
+            NodeGraphicModule brotherDownGM = getNodeGraphicModule(brotherDown);
+
+            y = brotherDownGM.getTop()+brotherDownGM.getMeasuredHeight()/2-brotherDownGM.getFamilySize()/2;
+        }
+        else{
+            ChildNode brotherUp = children.get(index-1);
+            NodeGraphicModule brotherUpGM = getNodeGraphicModule(brotherUp);
+            y = brotherUpGM.getTop()+brotherUpGM.getMeasuredHeight()/2+brotherUpGM.getFamilySize()/2;
+        }
+
+        pastedNodeGM.setLeft(x);
+        pastedNodeGM.setTop(y-pastedNodeGM.getMeasuredHeight()/2);
+
+
+        BranchIterator iterator = new BranchIterator(pastedNode);
+        while(!iterator.atEnd()){
+            ChildNode temp = iterator.next();
+            arrangeChildren(temp.getChildren(),getNodeGraphicModule(temp).getIsOnTheRightSide());
+        }
+
+        rearrangeBranchAfterAncestorFamilySizeChanged(pastedNode,pastedNodeGM.getFamilySize()/2);
     }
 }

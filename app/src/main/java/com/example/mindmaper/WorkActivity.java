@@ -78,7 +78,18 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                         break;
                     }
 
+                    case PastingNode:{
+                        BranchIterator iterator = new BranchIterator((ChildNode)node);
+                        while(!iterator.atEnd()){
+                            ChildNode childNode = iterator.next();
+                            doBaseThingsWithNode(childNode);
+                        }
+                        mindMapView.update(operation);
+                        break;
+                    }
+
                     default:{
+
                         Log.d("Ku","Something Wrong in OnChanged Last");
                     }
                 }
@@ -243,9 +254,33 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                 viewModel.cutNode(focusedNode);
 
                 mindMapView.setFocusedNode(null);
-
             }
         });
+
+        actionsPanel.getBtnCopy().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+                processedNode = focusedNode;
+
+                viewModel.copyNode(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+            }
+        });
+
+        actionsPanel.getBtnPast().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+                processedNode = focusedNode;
+
+                viewModel.startPastingNode(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+            }
+        });
+
 
     }
 
