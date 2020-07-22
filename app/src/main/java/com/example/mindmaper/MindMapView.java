@@ -79,6 +79,10 @@ public class MindMapView extends AbsoluteLayout {
                 Log.d("K;",getNodeGraphicModule(node).getWidth() + " " + getNodeGraphicModule(node).getHeight());
                 break;
             }
+            case NodeDeled:{
+                afterNodeDeleted();
+                break;
+            }
         }
         //finding measuredDim of mindMapView
         Pair<Integer,Integer> maxDistances = findMaxDistances();
@@ -97,6 +101,7 @@ public class MindMapView extends AbsoluteLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+
         Log.d("Ku","onLayoutBegin");
         if(operation == null) return;
 
@@ -166,6 +171,8 @@ public class MindMapView extends AbsoluteLayout {
                 break;
             }
         }
+
+
         isOnMeasureFirsTime = true;
         operation = null;
         Log.d("Ku","OnLayoutDone");
@@ -394,6 +401,15 @@ public class MindMapView extends AbsoluteLayout {
                 setOnFocusListenerForNode(operation.second);
                 this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
                 break;
+            }
+            case NodeDeled:{
+
+                BranchIterator iterator = new BranchIterator((ChildNode)operation.second);
+                while (!iterator.atEnd()){
+                    removeView(getNodeGraphicModule(iterator.next()));
+                }
+
+                this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
             }
         }
     }
@@ -626,5 +642,62 @@ public class MindMapView extends AbsoluteLayout {
                 setFocusedNode(node);
             }
         });
+    }
+
+    private void afterNodeDeleted(){
+        ChildNode deletedNode = (ChildNode)operation.second;
+        NodeGraphicModule deletedNodeGM = getNodeGraphicModule(deletedNode);
+        boolean isOnTheRightSide = deletedNodeGM.getIsOnTheRightSide();
+
+        Node parent = deletedNode.getParent();
+        ChildNode childParent = deletedNode; //просто для инициализации
+        ArrayList<ChildNode>  children;
+
+        if(parent == centralNode){
+            if(isOnTheRightSide)
+                children = centralNode.getRightChildren();
+            else  children = centralNode.getLeftChildren();
+        }
+        else{
+            childParent = (ChildNode)parent;
+            children = childParent.getChildren();
+        }
+
+        int deleteNodeY = deletedNodeGM.getTop();
+        int shift = deletedNodeGM.getFamilySize()/2;
+
+        for (int i = 0; i < children.size(); i++) {
+            if(getNodeGraphicModule(children.get(i)).getTop() < deleteNodeY){
+                shiftBranch(children.get(i),shift,Direction.DOWN,true);
+            }
+            else{
+                shiftBranch(children.get(i),shift,Direction.UP,true);
+            }
+        }
+
+//        ArrayList<Integer> oldChildrenY = new ArrayList<>(children.size());
+//        for (int i = 0; i < children.size(); i++) {
+//            oldChildrenY.set(i,getNodeGraphicModule(children.get(i)).getTop());
+//        }
+
+//        arrangeChildren(children,isOnTheRightSide);
+
+//        for (int i = 0; i < children.size(); i++) {
+//            int shift = oldChildrenY.get(i) - getNodeGraphicModule(children.get(i)).getTop();
+//            if(shift < 0) shiftBranch(children.get(i),Math.abs(shift),Direction.DOWN,false);
+//        }
+
+        if(parent == centralNode) return;
+        //rearrangeBranch по y
+        NodeGraphicModule childParentGM = getNodeGraphicModule(childParent);
+        int oldFamilySize = childParentGM.getFamilySize();
+
+        calculateNodeFamilySize(childParent);
+        int newFamilySize = childParentGM.getFamilySize();
+
+        int familySizeChange = newFamilySize-oldFamilySize;
+
+
+        rearrangeBranchAfterAncestorFamilySizeChanged(childParent,familySizeChange);
     }
 }

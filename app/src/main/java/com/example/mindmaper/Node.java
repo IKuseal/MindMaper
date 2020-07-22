@@ -54,5 +54,8 @@ public class Node {
     public void setGraphicModule(Object graphicModule) {
         this.graphicModule = graphicModule;
     }
+    public void delSon(ChildNode node){
+
+    }
 
 }

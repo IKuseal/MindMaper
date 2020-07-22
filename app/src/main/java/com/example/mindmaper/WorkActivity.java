@@ -73,6 +73,11 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                         break;
                     }
 
+                    case NodeDeled:{
+                        mindMapView.update(operation);
+                        break;
+                    }
+
                     default:{
                         Log.d("Ku","Something Wrong in OnChanged Last");
                     }
@@ -216,6 +221,19 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
 
             }
         });
+
+        actionsPanel.getBtnDel().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+
+                viewModel.delNode(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
     }
 
     @Override

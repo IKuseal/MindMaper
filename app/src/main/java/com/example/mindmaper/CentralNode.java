@@ -38,4 +38,10 @@ public class CentralNode extends Node {
         node.setParent(this);
         getLeftChildren().add(node);
     }
+
+    @Override
+    public void delSon(ChildNode childNode){
+        if(getLeftChildren().contains(childNode)) getLeftChildren().remove(childNode);
+        else getRightChildren().remove(childNode);
+    }
 }

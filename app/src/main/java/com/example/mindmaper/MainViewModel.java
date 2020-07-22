@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.widget.TextView;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,7 +15,7 @@ import androidx.lifecycle.ViewModel;
 public class MainViewModel extends ViewModel {
     private int id;
 
-    public enum Operation{ MapOpened,MainTextEdited,NodeAdded};
+    public enum Operation{ MapOpened,MainTextEdited,NodeAdded,NodeDeled};
 
     private ArrayList<ChildNode> mapNodes;
     private HashMap<Integer,Style> styles;
@@ -256,5 +257,16 @@ public class MainViewModel extends ViewModel {
         brother.addBrotherDown(added);
         mapNodes.add(added);
         getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,added));
+    }
+
+    public void delNode(ChildNode node){
+        node.getParent().delSon(node);
+
+        BranchIterator iterator = new BranchIterator(node);
+        while (!iterator.atEnd()){
+            mapNodes.remove(iterator.next());
+        }
+
+        lastOperation.setValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
     }
 }

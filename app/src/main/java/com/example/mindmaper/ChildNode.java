@@ -75,4 +75,9 @@ public class ChildNode extends Node{
     public void setParent(Node parent) {
         this.parent = parent;
     }
+
+    @Override
+    public void delSon(ChildNode childNode){
+        getChildren().remove(childNode);
+    }
 }
