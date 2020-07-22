@@ -3,6 +3,9 @@ package com.example.mindmaper;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Path;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -22,9 +25,13 @@ public class NodeGraphicModule extends AppCompatTextView{
         this.setText(owner.getMainText());
         this.owner = owner;
         defineIsOnTheRight();
-        setBackgroundColor(Color.GREEN);
-        path = new Path();
 
+        StateListDrawable drawable = new StateListDrawable();
+        drawable.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(getResources().getColor(R.color.pressedNode)));
+        drawable.addState(new int[]{}, new ColorDrawable(getResources().getColor(R.color.node)));
+        setBackground(drawable);
+
+        path = new Path();
     }
     static NodeGraphicModule extractNodeGraphicModule(Object object){
         return (NodeGraphicModule)object;

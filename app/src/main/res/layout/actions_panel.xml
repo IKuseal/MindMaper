@@ -2,18 +2,20 @@
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/panel"
+    android:background="@drawable/panel_stroke"
     android:columnCount="4"
     android:orientation="horizontal"
     android:rowCount="4">
 
     <Button
         android:id="@+id/btnSon"
-        android:layout_width="wrap_content"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
         android:layout_row="0"
         android:layout_column="0"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/child"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -23,17 +25,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/child"
-        android:textSize="8sp"
-        android:background="@color/panel"
-        android:drawableStart="@drawable/child"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnUpBrother"
-        android:layout_width="wrap_content"
+        android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:layout_row="0"
         android:layout_column="1"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/up"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -43,9 +45,7 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/add_up"
-        android:textSize="8sp"
-        android:background="@color/panel"
-        android:drawableStart="@drawable/up"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnDownBrother"
@@ -114,6 +114,8 @@
         android:layout_row="1"
         android:layout_column="1"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/right"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -123,17 +125,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/right_child"
-        android:textSize="8sp"
-        android:background="@color/panel"
-        android:drawableStart="@drawable/right"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnEditMainText"
-        android:layout_width="wrap_content"
+        android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:layout_row="2"
         android:layout_column="0"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/edit_text"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -143,17 +145,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/edit"
-        android:textSize="8sp"
-        android:drawableStart="@drawable/edit_text"
-        android:background="@color/panel"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnEditAttachedText"
-        android:layout_width="wrap_content"
+        android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:layout_row="2"
         android:layout_column="1"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/add_text"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -163,17 +165,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/note"
-        android:textSize="8sp"
-        android:background="@color/panel"
-        android:drawableStart="@drawable/add_text"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="82dp"
         android:layout_height="wrap_content"
         android:layout_row="2"
         android:layout_column="2"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/style"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -183,17 +185,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/style"
-        android:textSize="8sp"
-        android:background="@color/panel"
-        android:drawableStart="@drawable/style"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnCopy"
-        android:layout_width="wrap_content"
+        android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:layout_row="3"
         android:layout_column="0"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/copy"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -203,17 +205,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/copy"
-        android:textSize="8sp"
-        android:drawableStart="@drawable/copy"
-        android:background="@color/panel"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnPast"
-        android:layout_width="wrap_content"
+        android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:layout_row="3"
         android:layout_column="1"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/paste"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -223,17 +225,17 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/paste"
-        android:textSize="8sp"
-        android:drawableStart="@drawable/paste"
-        android:background="@color/panel"/>
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnCut"
-        android:layout_width="wrap_content"
+        android:layout_width="82dp"
         android:layout_height="wrap_content"
         android:layout_row="3"
         android:layout_column="2"
         android:layout_margin="0dp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/cut"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingStart="4dp"
@@ -243,8 +245,6 @@
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
         android:text="@string/cut"
-        android:textSize="8sp"
-        android:background="@color/panel"
-        android:drawableStart="@drawable/cut"/>
+        android:textSize="8sp" />
 
 </GridLayout>
