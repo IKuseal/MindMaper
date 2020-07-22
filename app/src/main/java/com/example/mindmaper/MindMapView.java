@@ -82,9 +82,7 @@ public class MindMapView extends AbsoluteLayout {
                 break;
             }
             case NodeAdded:{
-                Log.d("K;",getNodeGraphicModule(node).getWidth() + " " + getNodeGraphicModule(node).getHeight());
                 afterNewNodeOnMapAdded((ChildNode)node);
-                Log.d("K;",getNodeGraphicModule(node).getWidth() + " " + getNodeGraphicModule(node).getHeight());
                 break;
             }
             case NodeDeled:{
@@ -485,19 +483,14 @@ public class MindMapView extends AbsoluteLayout {
         ChildNode branchHead = (ChildNode)node;
         NodeGraphicModule branchHeadGM = getNodeGraphicModule(branchHead);
 
-        Log.d("KKK","getMeasured before 2 measure " + branchHeadGM.getMeasuredHeight() + " " + branchHeadGM.getMeasuredWidth()+ branchHeadGM.getText());
         branchHeadGM.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        Log.d("KKK","getMeasured after 2 measure " + branchHeadGM.getMeasuredHeight() + " " + branchHeadGM.getMeasuredWidth()+ branchHeadGM.getText());
 
+        Log.d("Data","data " + branchHeadGM.getMeasuredWidth() + " " + branchHeadGM.getWidth());
         int shiftX = branchHeadGM.getMeasuredWidth()-branchHeadGM.getWidth();
 
-
         //rearrangeNode
-        Log.d("KKK", "height " +branchHeadGM.getHeight());
 
         rearrangeNodeAfterSizeChanged(node);
-
-        Log.d("KKK", "height " +branchHeadGM.getHeight());
 
         //rearrangeBranch по X
         Direction dir;
@@ -641,7 +634,7 @@ public class MindMapView extends AbsoluteLayout {
             x = parentGM.getLeft() + parentGM.getMeasuredWidth()+xGap;
         }
         else{
-            x = parentGM.getLeft() - xGap;
+            x = parentGM.getLeft() - xGap - addedNodeGM.getMeasuredWidth();
         }
 
         //нахождение y позиции
@@ -759,7 +752,7 @@ public class MindMapView extends AbsoluteLayout {
             x = parentGM.getLeft() + parentGM.getMeasuredWidth()+xGap;
         }
         else{
-            x = parentGM.getLeft() - xGap;
+            x = parentGM.getLeft() - xGap - pastedNodeGM.getMeasuredWidth();
         }
 
 

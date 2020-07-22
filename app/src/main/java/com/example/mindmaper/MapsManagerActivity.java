@@ -1,0 +1,67 @@
+package com.example.mindmaper;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+
+public class MapsManagerActivity extends AppCompatActivity {
+    private MapsManagerViewModel viewModel;
+    private MapsListViewAdapter adapter;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps_manager);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.mapsManagerToolbar);
+        setSupportActionBar(myToolbar);
+
+        ListView listView = (ListView)findViewById(R.id.listViewMaps);
+
+        adapter = new MapsListViewAdapter(this,R.layout.map_card,new ArrayList<Map>());
+        listView.setAdapter(adapter);
+
+        viewModel = new ViewModelProvider(this).get(MapsManagerViewModel.class);
+
+        viewModel.getMaps().observe(this, new Observer<ArrayList<Map>>() {
+            @Override
+            public void onChanged(ArrayList<Map> maps) {
+                Log.d("SSS","OnChanged ");
+                adapter.clear();
+                adapter.addAll(maps);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+
+        viewModel.loadMapsList();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.maps_manager_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id){
+            case R.id.action_create_map :{
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
