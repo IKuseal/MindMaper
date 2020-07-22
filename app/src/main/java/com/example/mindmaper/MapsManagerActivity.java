@@ -14,7 +14,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.mindmaper.Database.EMap;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapsManagerActivity extends AppCompatActivity implements EditTextDialogFragment.EditingTextResultReceiver {
     private MapsManagerViewModel viewModel;
@@ -29,17 +32,17 @@ public class MapsManagerActivity extends AppCompatActivity implements EditTextDi
 
         ListView listView = (ListView)findViewById(R.id.listViewMaps);
 
-        adapter = new MapsListViewAdapter(this,R.layout.map_card,new ArrayList<Map>());
+        adapter = new MapsListViewAdapter(this,R.layout.map_card,new ArrayList<EMap>());
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id)
             {
-                ArrayList<Map> maps = viewModel.getMaps().getValue();
-                Map map = maps.get(position);
+                List<EMap> eMaps = viewModel.getMaps().getValue();
+                EMap map = eMaps.get(position);
                 Intent data = new Intent();
-                data.putExtra("id", map.getId());
+                data.putExtra("id", map.id);
                 setResult(RESULT_OK, data);
                 finish();
 
@@ -48,25 +51,27 @@ public class MapsManagerActivity extends AppCompatActivity implements EditTextDi
 
         viewModel = new ViewModelProvider(this).get(MapsManagerViewModel.class);
 
-        viewModel.getMaps().observe(this, new Observer<ArrayList<Map>>() {
+        viewModel.getMaps().observe(this, new Observer<List<EMap>>() {
             @Override
-            public void onChanged(ArrayList<Map> maps) {
+            public void onChanged(List<EMap> eMaps) {
                 Log.d("SSS","OnChanged ");
+
                 if(viewModel.isMapWasCreated()){
-                    Map map = maps.get(maps.size()-1);
+                    EMap emap = eMaps.get(eMaps.size()-1);
+
                     Intent data = new Intent();
-                    data.putExtra("id", map.getId());
+                    data.putExtra("id", emap.id);
                     setResult(RESULT_OK, data);
                     finish();
                 }
                 else{
                     adapter.clear();
-                    adapter.addAll(maps);
+                    adapter.addAll(eMaps);
                     adapter.notifyDataSetChanged();
-
                 }
             }
         });
+
 
 
         viewModel.loadMapsList();

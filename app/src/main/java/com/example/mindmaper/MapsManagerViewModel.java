@@ -1,10 +1,21 @@
 package com.example.mindmaper;
 
+import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 
+import com.example.mindmaper.Database.App;
+import com.example.mindmaper.Database.AppDatabase;
+import com.example.mindmaper.Database.EMap;
+import com.example.mindmaper.Database.EMapDao;
+import com.example.mindmaper.Database.ENode;
+import com.example.mindmaper.Database.ENodeDao;
+import com.example.mindmaper.Database.EStyle;
+import com.example.mindmaper.Database.EStyleDao;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,51 +23,65 @@ import androidx.lifecycle.ViewModel;
 public class MapsManagerViewModel extends ViewModel {
     private int id = 0;
     private boolean isMapWasCreated = false;
+    private AppDatabase db = App.getInstance().getDatabase();
 
-    private MutableLiveData<ArrayList<Map>> maps = new MutableLiveData<>();
 
-    public MutableLiveData<ArrayList<Map>> getMaps() {
+    private MutableLiveData<List<EMap>> maps;
+
+    public MutableLiveData<List<EMap>> getMaps() {
+        if(maps == null){
+            maps = new MutableLiveData<>();
+            loadMapsList();
+        }
         return maps;
     }
 
-    public void setMaps(MutableLiveData<ArrayList<Map>> maps) {
+    public void setMaps(MutableLiveData<List<EMap>> maps) {
         this.maps = maps;
-    }
-
-    public void temporaryGenerationMap(){
-        ArrayList<Map> tempMaps = new ArrayList<>();
-
-        ++id;
-        Map map = new Map(id,"first");
-        tempMaps.add(map);
-
-        ++id;
-        map = new Map(id,"second");
-        tempMaps.add(map);
-
-        ++id;
-        map = new Map(id,"third");
-        tempMaps.add(map);
-
-        ++id;
-        map = new Map(id,"fourth");
-        tempMaps.add(map);
-
-        getMaps().setValue(tempMaps);
     }
 
     public void loadMapsList(){
         //доработать
-        temporaryGenerationMap();
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                EMapDao eMapDao = db.eMapDao();
+                getMaps().postValue(eMapDao.getAll());
+            }
+        });
     }
 
-    public void createMap(String name){
-        ++id;
-        Map map = new Map(id,name);
-        ArrayList mapsArray = getMaps().getValue();
-        mapsArray.add(map);
+
+
+    public void createMap(final String name){
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                EMapDao eMapDao = db.eMapDao();
+                EMap eMap = new EMap();
+                eMap.name = name;
+                long mapId = eMapDao.insert(eMap);
+
+                EStyleDao eStyleDao = db.eStyleDao();
+                EStyle eStyle = new EStyle();
+                eStyle.color = 100;
+                long styleId = eStyleDao.insert(eStyle);
+
+                ENodeDao eNodeDao = db.eNodeDao();
+                ENode eNode = new ENode();
+                eNode.mapId = mapId;
+                eNode.styleId = styleId;
+                eNode.position = 0;
+                eNode.mainText = "Central";
+                eNode.attachedText = "";
+                long centralNodeId = eNodeDao.insert(eNode);
+
+                eMapDao.updateCentralNodeId(mapId,centralNodeId);
+
+            }
+        });
+        loadMapsList();
         isMapWasCreated = true;
-        getMaps().setValue(mapsArray);
     }
 
     public boolean isMapWasCreated() {

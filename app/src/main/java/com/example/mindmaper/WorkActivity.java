@@ -108,7 +108,7 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
             }
         });
 
-        viewModel.openMap();
+        //viewModel.openMap();
     }
 
     @Override

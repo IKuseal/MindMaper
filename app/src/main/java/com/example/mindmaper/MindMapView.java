@@ -40,12 +40,14 @@ public class MindMapView extends AbsoluteLayout {
         gestureDetector = new GestureDetector(context, new MyGestureListener());
         preparePaint();
         setWillNotDraw(false);
+        mapNodes = new ArrayList<>();
     }
     public MindMapView(Context context, AttributeSet attributeSet){
         super(context,attributeSet);
         gestureDetector = new GestureDetector(context, new MyGestureListener());
         preparePaint();
         setWillNotDraw(false);
+        mapNodes = new ArrayList<>();
     }
 
 
