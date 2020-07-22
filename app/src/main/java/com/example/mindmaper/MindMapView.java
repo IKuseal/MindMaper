@@ -73,6 +73,12 @@ public class MindMapView extends AbsoluteLayout {
                 }
                 break;
             }
+            case NodeAdded:{
+                Log.d("K;",getNodeGraphicModule(node).getWidth() + " " + getNodeGraphicModule(node).getHeight());
+                afterNewNodeOnMapAdded((ChildNode)node);
+                Log.d("K;",getNodeGraphicModule(node).getWidth() + " " + getNodeGraphicModule(node).getHeight());
+                break;
+            }
         }
         //finding measuredDim of mindMapView
         Pair<Integer,Integer> maxDistances = findMaxDistances();
@@ -118,6 +124,7 @@ public class MindMapView extends AbsoluteLayout {
                 centralLabelGM.getTop()-200+actionsPanel.getMeasuredHeight());
 
         int LBLeft = 0;
+        Log.d("Kr",mapNodes.size()+ " ");
         for (int i = 0; i < mapNodes.size(); i++) {
             tempGM = NodeGraphicModule.extractNodeGraphicModule(mapNodes.get(i).getGraphicModule());
             newPosX = (int)tempGM.getLeft() + shiftX;
@@ -125,13 +132,14 @@ public class MindMapView extends AbsoluteLayout {
             tempGM.layout(newPosX,newPosY,
                     newPosX+tempGM.getMeasuredWidth(),newPosY+tempGM.getMeasuredHeight());
             Log.d("Ki",tempGM.getText().toString());
-            if(tempGM.getText().equals("LA")){
+            if(tempGM.getText().equals("node")){
                LBLeft = tempGM.getLeft();
-               Log.d("Ki","LBLeft " + LBLeft);
+               Log.d("Kr","LBLeft " + LBLeft+ " " + tempGM.getTop());
+               Log.d("Kr","LBLeft " + tempGM.getMeasuredWidth()+ " " + tempGM.getMeasuredHeight());
+                Log.d("Kr","LBLeft " + tempGM.getWidth()+ " " + tempGM.getHeight()+tempGM.getText());
+
             }
-            if(tempGM.getText().equals("LAB")){
-                Log.d("Ki","Dist " + (LBLeft - (tempGM.getLeft()+tempGM.getMeasuredWidth())));
-            }
+
         }
         Log.d("Ku","ParentSizes = " + this.getMeasuredWidth() + " " + this.getMeasuredHeight());
 
@@ -186,19 +194,9 @@ public class MindMapView extends AbsoluteLayout {
         this.mapNodes = mapNodes;
         this.operation = new Pair<>(MainViewModel.Operation.MapOpened,null);
 
-        getNodeGraphicModule(centralNode).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setFocusedNode(centralNode);
-            }
-        });
+        setOnFocusListenerForNode(centralNode);
         for (int i = 0; i < mapNodes.size(); i++) {
-            getNodeGraphicModule(mapNodes.get(i)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    setFocusedNode(((NodeGraphicModule)view).getOwner());
-                }
-            });
+            setOnFocusListenerForNode(mapNodes.get(i));
         }
 
         addNodeOnMap(centralNode);
@@ -389,6 +387,13 @@ public class MindMapView extends AbsoluteLayout {
         switch (this.operation.first){
             case MainTextEdited:{
                 this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
+                break;
+            }
+            case NodeAdded:{
+                addNodeOnMap((ChildNode)operation.second);
+                setOnFocusListenerForNode(operation.second);
+                this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
+                break;
             }
         }
     }
@@ -422,13 +427,19 @@ public class MindMapView extends AbsoluteLayout {
         ChildNode branchHead = (ChildNode)node;
         NodeGraphicModule branchHeadGM = getNodeGraphicModule(branchHead);
 
+        Log.d("KKK","getMeasured before 2 measure " + branchHeadGM.getMeasuredHeight() + " " + branchHeadGM.getMeasuredWidth()+ branchHeadGM.getText());
         branchHeadGM.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        Log.d("KKK","getMeasured after 2 measure " + branchHeadGM.getMeasuredHeight() + " " + branchHeadGM.getMeasuredWidth()+ branchHeadGM.getText());
 
         int shiftX = branchHeadGM.getMeasuredWidth()-branchHeadGM.getWidth();
 
+
         //rearrangeNode
-        Log.d("Kh","SizeChange " +branchHeadGM.getMeasuredWidth()+ " "+branchHeadGM.getWidth());
+        Log.d("KKK", "height " +branchHeadGM.getHeight());
+
         rearrangeNodeAfterSizeChanged(node);
+
+        Log.d("KKK", "height " +branchHeadGM.getHeight());
 
         //rearrangeBranch по X
         Direction dir;
@@ -445,6 +456,7 @@ public class MindMapView extends AbsoluteLayout {
         int newFamilySize = branchHeadGM.getFamilySize();
 
         int familySizeChange = newFamilySize-oldFamilySize;
+
 
         rearrangeBranchAfterAncestorFamilySizeChanged(branchHead,familySizeChange);
 
@@ -468,6 +480,8 @@ public class MindMapView extends AbsoluteLayout {
             int shiftX = childNodeGM.getMeasuredWidth()-childNodeGM.getWidth();
             Log.d("Kh", "shiftX" + shiftX);
             int shiftY = (childNodeGM.getMeasuredHeight()-childNodeGM.getHeight())/2;
+            Log.d("KKK","shiftY " + shiftY );
+            Log.d("KKK","shiftY " + childNodeGM.getMeasuredHeight() +" " + childNodeGM.getHeight());
 
             if(!childNodeGM.getIsOnTheRightSide()) childNodeGM.setLeft(childNodeGM.getLeft()-shiftX);
             childNodeGM.setTop(childNodeGM.getTop()-shiftY);
@@ -540,5 +554,77 @@ public class MindMapView extends AbsoluteLayout {
 
         rearrangeBranchAfterAncestorFamilySizeChanged(childParent,familySizeChange);
 
+    }
+
+    public void afterNewNodeOnMapAdded(ChildNode addedNode){
+        NodeGraphicModule addedNodeGM = getNodeGraphicModule(addedNode);
+        addedNodeGM.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+
+        Node parent = addedNode.getParent();
+        ChildNode childParent = addedNode;
+        NodeGraphicModule parentGM = getNodeGraphicModule(parent);
+        ArrayList<ChildNode> children;
+        if(parent == centralNode){
+            if(addedNodeGM.getIsOnTheRightSide())
+                children = centralNode.getRightChildren();
+            else children = centralNode.getLeftChildren();
+        }
+        else{
+            childParent = (ChildNode)parent;
+            children = childParent.getChildren();
+        }
+
+        int index = children.indexOf(addedNode);
+
+        //нахождение позиции x
+        int x = 0;
+
+        if(addedNodeGM.getIsOnTheRightSide()){
+            x = parentGM.getLeft() + parentGM.getMeasuredWidth()+xGap;
+        }
+        else{
+            x = parentGM.getLeft() - xGap;
+        }
+
+        //нахождение y позиции
+        int y = 0;
+        if(children.size() == 1){
+            Log.d("LLaaa","parentGMTOP "+parentGM.getTop());
+            y = parentGM.getTop() + parentGM.getMeasuredHeight()/2-addedNodeGM.getMeasuredHeight()/2;
+            Log.d("LLaaa","y "+parentGM.getTop());
+            addedNodeGM.setLeft(x);
+            addedNodeGM.setTop(y);
+            calculateNodeFamilySize(addedNode);
+            return;
+        }
+        else if(index+1<children.size()){
+            ChildNode brotherDown = children.get(index+1);
+            NodeGraphicModule brotherDownGM = getNodeGraphicModule(brotherDown);
+
+            y = brotherDownGM.getTop()+brotherDownGM.getMeasuredHeight()/2-brotherDownGM.getFamilySize()/2;
+        }
+        else{
+            ChildNode brotherUp = children.get(index-1);
+            NodeGraphicModule brotherUpGM = getNodeGraphicModule(brotherUp);
+            Log.d("KKK","Brother " + brotherUpGM.getText());
+            y = brotherUpGM.getTop()+brotherUpGM.getMeasuredHeight()/2+brotherUpGM.getFamilySize()/2;
+            Log.d("KKK","Brother " + y + " " + brotherUpGM.getTop());
+        }
+
+        addedNodeGM.setLeft(x);
+        addedNodeGM.setRight(x);
+        addedNodeGM.setTop(y);
+        addedNodeGM.setBottom(y);
+
+
+        rearrangeBranchAfterSizeChanged(addedNode);
+    }
+    private void setOnFocusListenerForNode(final Node node){
+        getNodeGraphicModule(node).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setFocusedNode(node);
+            }
+        });
     }
 }

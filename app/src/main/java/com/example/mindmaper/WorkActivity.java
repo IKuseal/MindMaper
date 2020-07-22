@@ -57,7 +57,6 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                             doBaseThingsWithNode(childNode);
                         }
                         mindMapView.setMap(centralNode,mapNodes);
-                        //почему 2 раза?
                         Log.d("Ku","MapOpened in OnChangedOperation");
                         break;
                     }
@@ -65,6 +64,13 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                     case MainTextEdited:{
                         NodeGraphicModule.extractNodeGraphicModule(node.getGraphicModule()).setText(node.getMainText());
                         mindMapView.update(operation);
+                        break;
+                    }
+
+                    case NodeAdded:{
+                        doBaseThingsWithNode(node);
+                        mindMapView.update(operation);
+                        break;
                     }
 
                     default:{
@@ -80,7 +86,7 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
 
 
     private void doBaseThingsWithNode(Node node){
-        final NodeGraphicModule nodeGM = new NodeGraphicModule(this,node);
+        NodeGraphicModule nodeGM = new NodeGraphicModule(this,node);
         node.setGraphicModule(nodeGM);
     }
 
@@ -140,6 +146,71 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                 dialog.setArguments(args);
 
                 dialog.show(getSupportFragmentManager(), "custom");
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
+        actionsPanel.getBtnSon().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+                WorkActivity.this.processedNode = focusedNode;
+
+                viewModel.addSon(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
+        actionsPanel.getBtnUpBrother().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+                WorkActivity.this.processedNode = focusedNode;
+
+                viewModel.addUpBrother(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
+        actionsPanel.getBtnDownBrother().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
+                WorkActivity.this.processedNode = focusedNode;
+
+                viewModel.addDownBrother(focusedNode);
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
+        actionsPanel.getBtnLeftSon().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Node focusedNode = mindMapView.getFocusedNode();
+                WorkActivity.this.processedNode = focusedNode;
+
+                viewModel.addLeftSonOfCentralNode();
+
+                mindMapView.setFocusedNode(null);
+
+            }
+        });
+
+        actionsPanel.getBtnRightSon().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Node focusedNode = mindMapView.getFocusedNode();
+                WorkActivity.this.processedNode = focusedNode;
+
+                viewModel.addRightSonOfCentralNode();
 
                 mindMapView.setFocusedNode(null);
 
