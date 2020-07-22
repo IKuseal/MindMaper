@@ -2,7 +2,7 @@
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#f39707"
+    android:background="@color/panel"
     android:columnCount="4"
     android:orientation="horizontal"
     android:rowCount="4">
@@ -22,8 +22,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="son"
-        android:textSize="8sp" />
+        android:text="@string/child"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/child"/>
 
     <Button
         android:id="@+id/btnUpBrother"
@@ -40,8 +42,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="upb"
-        android:textSize="8sp" />
+        android:text="@string/add_up"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/up"/>
 
     <Button
         android:id="@+id/btnDownBrother"
@@ -58,8 +62,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="down"
-        android:textSize="8sp" />
+        android:text="@string/add_down"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/down"/>
 
     <Button
         android:id="@+id/btnDel"
@@ -76,8 +82,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="del"
-        android:textSize="8sp" />
+        android:text="@string/del"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/delete"/>
 
     <Button
         android:id="@+id/btnLeftSon"
@@ -94,8 +102,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="lson"
-        android:textSize="8sp" />
+        android:text="@string/left_child"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/left"/>
 
     <Button
         android:id="@+id/btnRightSon"
@@ -112,8 +122,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="rson"
-        android:textSize="8sp" />
+        android:text="@string/right_child"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/right"/>
 
     <Button
         android:id="@+id/btnEditMainText"
@@ -130,8 +142,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="mtex"
-        android:textSize="8sp" />
+        android:text="@string/edit"
+        android:textSize="8sp"
+        android:drawableStart="@drawable/edit_text"
+        android:background="@color/panel"/>
 
     <Button
         android:id="@+id/btnEditAttachedText"
@@ -148,8 +162,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="atex"
-        android:textSize="8sp" />
+        android:text="@string/note"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/add_text"/>
 
     <Button
         android:id="@+id/btnStyle"
@@ -166,8 +182,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="styl"
-        android:textSize="8sp" />
+        android:text="@string/style"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/style"/>
 
     <Button
         android:id="@+id/btnCopy"
@@ -184,8 +202,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="Cop"
-        android:textSize="8sp" />
+        android:text="@string/copy"
+        android:textSize="8sp"
+        android:drawableStart="@drawable/copy"
+        android:background="@color/panel"/>
 
     <Button
         android:id="@+id/btnPast"
@@ -202,8 +222,10 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="Past"
-        android:textSize="8sp" />
+        android:text="@string/paste"
+        android:textSize="8sp"
+        android:drawableStart="@drawable/paste"
+        android:background="@color/panel"/>
 
     <Button
         android:id="@+id/btnCut"
@@ -220,7 +242,9 @@
         android:paddingEnd="4dp"
         android:paddingRight="0dp"
         android:paddingBottom="4dp"
-        android:text="cut"
-        android:textSize="8sp" />
+        android:text="@string/cut"
+        android:textSize="8sp"
+        android:background="@color/panel"
+        android:drawableStart="@drawable/cut"/>
 
 </GridLayout>
