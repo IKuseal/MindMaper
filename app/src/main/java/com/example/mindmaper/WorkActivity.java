@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
@@ -129,6 +130,22 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+//        if(requestCode==REQUEST_ACCESS_TYPE){
+//            if(resultCode==RESULT_OK){
+//                String accessMessage = data.getStringExtra(ACCESS_MESSAGE);
+//                textView.setText(accessMessage);
+//            }
+//            else{
+//                textView.setText("Ошибка доступа");
+//            }
+//        }
+//        else{
+//            super.onActivityResult(requestCode, resultCode, data);
+//        }
     }
 
     private void doBaseThingsWithNode(Node node){

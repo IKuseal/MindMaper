@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -29,6 +31,20 @@ public class MapsManagerActivity extends AppCompatActivity {
 
         adapter = new MapsListViewAdapter(this,R.layout.map_card,new ArrayList<Map>());
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+            {
+                ArrayList<Map> maps = viewModel.getMaps().getValue();
+                Map map = maps.get(position);
+                Intent data = new Intent();
+                data.putExtra("id", map.getId());
+                setResult(RESULT_OK, data);
+                finish();
+
+            }
+        });
 
         viewModel = new ViewModelProvider(this).get(MapsManagerViewModel.class);
 
@@ -58,6 +74,7 @@ public class MapsManagerActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch(id){
             case R.id.action_create_map :{
+
 
                 return true;
             }
