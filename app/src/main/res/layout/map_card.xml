@@ -9,18 +9,20 @@
 
 
     <ImageView
-        android:layout_width="80dp"
+        android:layout_width="50dp"
         android:layout_height="48dp"
         android:layout_marginRight="20dp"
+        android:background="@drawable/stroke"
         android:maxWidth="10dp"
         android:maxHeight="10dp"
         android:src="@drawable/map_icon" />
-
 
     <TextView
         android:id="@+id/textMapName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:textColor="#000"
+        android:textSize="16sp" />
 
 </LinearLayout>
