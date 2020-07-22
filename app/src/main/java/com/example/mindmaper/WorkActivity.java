@@ -280,8 +280,6 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
                 mindMapView.setFocusedNode(null);
             }
         });
-
-
     }
 
     @Override

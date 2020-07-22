@@ -2,6 +2,7 @@ package com.example.mindmaper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Path;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ public class NodeGraphicModule extends AppCompatTextView{
     private int familySize = 0;
     private Node owner;
     private boolean isOnTheRightSide;
+    private Path path;
 
     public NodeGraphicModule(Context context){
         super(context);
@@ -21,7 +23,7 @@ public class NodeGraphicModule extends AppCompatTextView{
         this.owner = owner;
         defineIsOnTheRight();
         setBackgroundColor(Color.GREEN);
-
+        path = new Path();
 
     }
     static NodeGraphicModule extractNodeGraphicModule(Object object){
@@ -37,6 +39,14 @@ public class NodeGraphicModule extends AppCompatTextView{
     }
     public boolean getIsOnTheRightSide(){
         return isOnTheRightSide;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
     }
 
     //можно использовать только в случае, если у parent уже вычислено
@@ -67,4 +77,30 @@ public class NodeGraphicModule extends AppCompatTextView{
     public Node getOwner() {
         return owner;
     }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        path.reset();
+        if(owner instanceof CentralNode) return;
+        Node parent = ((ChildNode)owner).getParent();
+
+        NodeGraphicModule parentGM = NodeGraphicModule.extractNodeGraphicModule(parent.getGraphicModule());
+        NodeGraphicModule ownerGM = NodeGraphicModule.extractNodeGraphicModule(owner.getGraphicModule());
+
+        if(getIsOnTheRightSide()){
+            path.moveTo(parentGM.getLeft()+parentGM.getMeasuredWidth(),
+                    parentGM.getTop()+parentGM.getMeasuredHeight()/2);
+
+            path.lineTo(ownerGM.getLeft(),ownerGM.getTop()+ownerGM.getMeasuredHeight()/2);
+        }
+        else{
+            path.moveTo(parentGM.getLeft(),
+                    parentGM.getTop()+parentGM.getMeasuredHeight()/2);
+
+            path.lineTo(ownerGM.getLeft()+ownerGM.getMeasuredWidth(),ownerGM.getTop()+ownerGM.getMeasuredHeight()/2);
+        }
+    }
+
+
 }

@@ -1,6 +1,10 @@
 package com.example.mindmaper;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
@@ -22,6 +26,7 @@ public class MindMapView extends AbsoluteLayout {
     private CentralNode centralNode;
     private ArrayList<ChildNode> mapNodes;
     private boolean isOnMeasureFirsTime = true;
+    private Paint paint;
 
     private ActionsPanel actionsPanel;
     private int actonsPanelYGap = 40;
@@ -33,11 +38,14 @@ public class MindMapView extends AbsoluteLayout {
     public MindMapView(Context context){
         super(context);
         gestureDetector = new GestureDetector(context, new MyGestureListener());
+        preparePaint();
+        setWillNotDraw(false);
     }
     public MindMapView(Context context, AttributeSet attributeSet){
         super(context,attributeSet);
         gestureDetector = new GestureDetector(context, new MyGestureListener());
-
+        preparePaint();
+        setWillNotDraw(false);
     }
 
 
@@ -184,12 +192,25 @@ public class MindMapView extends AbsoluteLayout {
         isOnMeasureFirsTime = true;
         operation = null;
         Log.d("Ku","OnLayoutDone");
+
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        Log.d("RRR","wasHere");
+        super.onDraw(canvas);
+
+        for (int i = 0; i < mapNodes.size(); i++) {
+            Path path = ((NodeGraphicModule)mapNodes.get(i).getGraphicModule()).getPath();
+            canvas.drawPath(path,paint);
+            Log.d("df","wasHere" );
+        }
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        Log.d("Ki","OnTouchEvent");
         setFocusedNode(null);
         if (gestureDetector.onTouchEvent(event)) return true;
         return true;
@@ -770,5 +791,12 @@ public class MindMapView extends AbsoluteLayout {
         }
 
         rearrangeBranchAfterAncestorFamilySizeChanged(pastedNode,pastedNodeGM.getFamilySize()/2);
+    }
+    private void preparePaint(){
+        paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setStrokeWidth(10);
+        paint.setStyle(Paint.Style.STROKE);
+
     }
 }
