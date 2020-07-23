@@ -4,7 +4,7 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 
-@Database(entities = {EMap.class,ENode.class,EStyle.class}, version = 9)
+@Database(entities = {EMap.class,ENode.class,EStyle.class}, version = 10)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract EMapDao eMapDao();
     public abstract ENodeDao eNodeDao();

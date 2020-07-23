@@ -25,6 +25,7 @@ public class MindMapView extends AbsoluteLayout {
     private Pair<MainViewModel.Operation,Node> operation;
     private CentralNode centralNode;
     private ArrayList<ChildNode> mapNodes;
+    private ArrayList<NodeGraphicModule> mapNodesGM = new ArrayList<>();
     private boolean isOnMeasureFirsTime = true;
     private Paint paint;
 
@@ -189,7 +190,14 @@ public class MindMapView extends AbsoluteLayout {
             actionsPanel.getBtnEditMainText().callOnClick();
         }
 
+
+        mapNodesGM.clear();
+        for (int i = 0; i < mapNodes.size(); i++) {
+            mapNodesGM.add(getNodeGraphicModule(mapNodes.get(i)));
+        }
+
         isOnMeasureFirsTime = true;
+        invalidate();
         operation = null;
         Log.d("Ku","OnLayoutDone");
 
@@ -199,12 +207,15 @@ public class MindMapView extends AbsoluteLayout {
     protected void onDraw(Canvas canvas) {
         Log.d("RRR","wasHere");
         super.onDraw(canvas);
-
-        for (int i = 0; i < mapNodes.size(); i++) {
-            Path path = ((NodeGraphicModule)mapNodes.get(i).getGraphicModule()).getPath();
-            canvas.drawPath(path,paint);
-            Log.d("df","wasHere" );
+        if(operation == null){
+            for (int i = 0; i < mapNodesGM.size(); i++) {
+                Log.d("PPPP",i+"  " + mapNodes.size());
+                Path path = mapNodesGM.get(i).getPath();
+                canvas.drawPath(path,paint);
+                Log.d("df","wasHere" );
+            }
         }
+
 
     }
 
@@ -227,9 +238,9 @@ public class MindMapView extends AbsoluteLayout {
     public void setMap(final CentralNode centralNode, final ArrayList<ChildNode> mapNodes){
         Log.d("Ku","SetMapStarted ");
 
-//        removeAllViews();
-//        addView(actionsPanel);
-//        actionsPanel.setVisibility(GONE);
+        removeAllViews();
+        addView(actionsPanel);
+        actionsPanel.setVisibility(GONE);
 
         this.centralNode = centralNode;
         this.mapNodes = mapNodes;
@@ -439,12 +450,14 @@ public class MindMapView extends AbsoluteLayout {
             case NodeDeled:{
 
                 Log.d("PPP","Deled");
+
                 BranchIterator iterator = new BranchIterator((ChildNode)operation.second);
                 while (!iterator.atEnd()){
                     removeView(getNodeGraphicModule(iterator.next()));
                 }
 
                 this.measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
+                break;
             }
             case PastingNode:{
                 BranchIterator iterator = new BranchIterator((ChildNode)operation.second);

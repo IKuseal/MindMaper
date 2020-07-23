@@ -107,7 +107,7 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
             }
         });
 
-        //viewModel.openMap();
+//        viewModel.openMap();
     }
 
     @Override
@@ -317,10 +317,10 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
         actionsPanel.getBtnPast().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ChildNode focusedNode = (ChildNode)mindMapView.getFocusedNode();
-                processedNode = focusedNode;
 
-                viewModel.startPastingNode(focusedNode);
+                processedNode =  mindMapView.getFocusedNode();
+
+                viewModel.startPastingNode(processedNode);
 
                 mindMapView.setFocusedNode(null);
             }
