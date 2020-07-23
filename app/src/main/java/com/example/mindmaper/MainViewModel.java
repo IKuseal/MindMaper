@@ -21,7 +21,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
-    private int id;
+    private int id = 30;
 
     private AppDatabase db = App.getInstance().getDatabase();
     private long mapId;
@@ -309,14 +309,35 @@ public class MainViewModel extends ViewModel {
 
     }
 
-    public void editMainText(Node node,String text){
-        node.setMainText(text);
+    public void editMainText(final Node node,final String text){
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
 
-        getLastOperation().setValue(new Pair<Operation,Node>(Operation.MainTextEdited,node));
+                eNodeDao.updateMainText(node.getNodeId(),text);
+                node.setMainText(text);
+
+                getLastOperation().postValue(new Pair<Operation, Node>(Operation.MainTextEdited,node));
+
+
+            }
+        });
+
     }
 
-    public void edtiAttachedText(Node node,String text){
-        node.setAttachedText(text);
+    public void edtiAttachedText(final Node node,final String text){
+
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+
+                eNodeDao.updateAttachedText(node.getNodeId(),text);
+                node.setAttachedText(text);
+
+            }
+        });
     }
 
     public void addRightSonOfCentralNode(){
@@ -391,6 +412,16 @@ public class MainViewModel extends ViewModel {
         });
 
     }
+
+//    public void addSon( ChildNode parent){
+//        ++id;
+//        ChildNode addedNode = new ChildNode(id,parent.getStyleId()," ","");
+//        parent.addSon(addedNode);
+//        mapNodes.add(addedNode);
+//
+//        getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,addedNode));
+//
+//    }
 
     public void addUpBrother(final ChildNode brother){
         AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
@@ -484,16 +515,35 @@ public class MainViewModel extends ViewModel {
 
 
 
-    public void delNode(ChildNode node){
-        node.getParent().delSon(node);
+    public void delNode(final ChildNode node){
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+                eNodeDao.deleteENode(node.getNodeId());
 
-        BranchIterator iterator = new BranchIterator(node);
-        while (!iterator.atEnd()){
-            mapNodes.remove(iterator.next());
-        }
+                node.getParent().delSon(node);
 
-        lastOperation.setValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
+                BranchIterator iterator = new BranchIterator(node);
+                while (!iterator.atEnd()){
+                    mapNodes.remove(iterator.next());
+                }
+
+                lastOperation.postValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
+
+            }
+        });
     }
+//    public void delNode(final ChildNode node){
+//        node.getParent().delSon(node);
+//
+//        BranchIterator iterator = new BranchIterator(node);
+//        while (!iterator.atEnd()){
+//            mapNodes.remove(iterator.next());
+//        }
+//
+//        lastOperation.setValue(new Pair<Operation, Node>(Operation.NodeDeled,node));
+//    }
 
     public void cutNode(ChildNode node){
         node.getParent().delSon(node);

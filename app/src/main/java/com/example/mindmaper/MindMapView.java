@@ -227,9 +227,9 @@ public class MindMapView extends AbsoluteLayout {
     public void setMap(final CentralNode centralNode, final ArrayList<ChildNode> mapNodes){
         Log.d("Ku","SetMapStarted ");
 
-        removeAllViews();
-        addView(actionsPanel);
-        actionsPanel.setVisibility(GONE);
+//        removeAllViews();
+//        addView(actionsPanel);
+//        actionsPanel.setVisibility(GONE);
 
         this.centralNode = centralNode;
         this.mapNodes = mapNodes;
@@ -438,6 +438,7 @@ public class MindMapView extends AbsoluteLayout {
             }
             case NodeDeled:{
 
+                Log.d("PPP","Deled");
                 BranchIterator iterator = new BranchIterator((ChildNode)operation.second);
                 while (!iterator.atEnd()){
                     removeView(getNodeGraphicModule(iterator.next()));

@@ -9,8 +9,10 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 @Entity(foreignKeys = {@ForeignKey(entity = EMap.class, parentColumns = "id", childColumns = "map_id"),
-                       @ForeignKey(entity = ENode.class, parentColumns = "id", childColumns = "parent_id"),
+                       @ForeignKey(entity = ENode.class, parentColumns = "id", childColumns = "parent_id", onDelete = CASCADE),
                        @ForeignKey(entity = EStyle.class, parentColumns = "id", childColumns = "style_id")})
 public class ENode {
 
