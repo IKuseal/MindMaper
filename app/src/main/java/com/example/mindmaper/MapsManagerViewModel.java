@@ -52,7 +52,6 @@ public class MapsManagerViewModel extends ViewModel {
     }
 
 
-
     public void createMap(final String name){
         AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
             @Override
@@ -75,6 +74,8 @@ public class MapsManagerViewModel extends ViewModel {
                 eNode.mainText = "Central";
                 eNode.attachedText = "";
                 long centralNodeId = eNodeDao.insert(eNode);
+
+                Log.d("LLLL",centralNodeId + " ");
 
                 eMapDao.updateCentralNodeId(mapId,centralNodeId);
 

@@ -1,33 +1,33 @@
 package com.example.mindmaper;
 
 public class Node {
-    protected int nodeId;
-    protected int styleId;
+    protected long nodeId;
+    protected long styleId;
     protected String mainText;
     protected String attachedText;
     protected Object graphicModule;
 
 
-    public Node(int nodeId, int styleId, String mainText, String attachedText) {
+    public Node(long nodeId, long styleId, String mainText, String attachedText) {
         this.nodeId = nodeId;
         this.styleId = styleId;
         this.mainText = mainText;
         this.attachedText = attachedText;
     }
 
-    public int getNodeId() {
+    public long getNodeId() {
         return nodeId;
     }
 
-    public void setNodeId(int nodeId) {
+    public void setNodeId(long nodeId) {
         this.nodeId = nodeId;
     }
 
-    public int getStyleId() {
+    public long getStyleId() {
         return styleId;
     }
 
-    public void setStyleId(int styleId) {
+    public void setStyleId(long styleId) {
         this.styleId = styleId;
     }
 

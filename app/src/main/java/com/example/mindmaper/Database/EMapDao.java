@@ -12,6 +12,9 @@ public interface EMapDao{
     @Query("SELECT * FROM emap")
     List<EMap> getAll();
 
+    @Query("SELECT central_node_id FROM emap WHERE id = :mapId")
+    public long getCentralNodeId(long mapId);
+
     @Query(" UPDATE emap SET central_node_id = :centralNodeId WHERE id = :mapId ")
     public void updateCentralNodeId(long mapId, Long centralNodeId);
 

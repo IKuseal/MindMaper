@@ -8,7 +8,7 @@ public class ChildNode extends Node{
     private Node parent;
     private ArrayList<ChildNode> children;
 
-    public ChildNode(int nodeId, int styleId, String mainText, String attachedText) {
+    public ChildNode(long nodeId, long styleId, String mainText, String attachedText) {
         super(nodeId,styleId,mainText,attachedText);
         children = new ArrayList<>();
     }

@@ -42,6 +42,7 @@ public class MapsManagerActivity extends AppCompatActivity implements EditTextDi
                 List<EMap> eMaps = viewModel.getMaps().getValue();
                 EMap map = eMaps.get(position);
                 Intent data = new Intent();
+                Log.d("LLLL", "empa.id " + map.id);
                 data.putExtra("id", map.id);
                 setResult(RESULT_OK, data);
                 finish();
@@ -60,6 +61,7 @@ public class MapsManagerActivity extends AppCompatActivity implements EditTextDi
                     EMap emap = eMaps.get(eMaps.size()-1);
 
                     Intent data = new Intent();
+                    Log.d("LLLL", "empa.id " + emap.id);
                     data.putExtra("id", emap.id);
                     setResult(RESULT_OK, data);
                     finish();

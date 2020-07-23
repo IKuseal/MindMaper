@@ -226,6 +226,11 @@ public class MindMapView extends AbsoluteLayout {
     }
     public void setMap(final CentralNode centralNode, final ArrayList<ChildNode> mapNodes){
         Log.d("Ku","SetMapStarted ");
+
+        removeAllViews();
+        addView(actionsPanel);
+        actionsPanel.setVisibility(GONE);
+
         this.centralNode = centralNode;
         this.mapNodes = mapNodes;
         this.operation = new Pair<>(MainViewModel.Operation.MapOpened,null);

@@ -1,10 +1,21 @@
 package com.example.mindmaper;
 
+import android.icu.text.LocaleDisplayNames;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 
+import com.example.mindmaper.Database.App;
+import com.example.mindmaper.Database.AppDatabase;
+import com.example.mindmaper.Database.EMapDao;
+import com.example.mindmaper.Database.ENode;
+import com.example.mindmaper.Database.ENodeDao;
+import com.example.mindmaper.Database.EStyleDao;
+
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,14 +23,18 @@ import androidx.lifecycle.ViewModel;
 public class MainViewModel extends ViewModel {
     private int id;
 
+    private AppDatabase db = App.getInstance().getDatabase();
+    private long mapId;
+
     public enum Operation{ MapOpened,MainTextEdited,NodeAdded,NodeDeled,PastingNode};
 
-    private ArrayList<ChildNode> mapNodes;
-    private HashMap<Integer,Style> styles;
+    private ArrayList<ChildNode> mapNodes = new ArrayList<>();
+    private HashMap<Integer, Style> styles;
     private CentralNode centralNode;
     private ChildNode copiedNode;
+    private long resultId;
 
-    private MutableLiveData<Pair<Operation,Node>> lastOperation = new MutableLiveData<>();
+    private MutableLiveData<Pair<Operation, Node>> lastOperation = new MutableLiveData<>();
 
     public ArrayList<ChildNode> getMapNodes() {
         return mapNodes;
@@ -199,10 +214,99 @@ public class MainViewModel extends ViewModel {
         this.setMapNodes(tempMapNodes);
     }
 
-    public void openMap(){
-        //доработать
-        temporaryGenerationMap();
-        getLastOperation().setValue(new Pair<Operation,Node>(Operation.MapOpened,null));
+    public void openMap(final long id){
+        mapId = id;
+        mapNodes.clear();
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                EMapDao eMapDao = db.eMapDao();
+                ENodeDao eNodeDao = db.eNodeDao();
+                EStyleDao eStyleDao = db.eStyleDao();
+
+                Log.d("LLLL","ID " + id);
+                long centralNodeId = eMapDao.getCentralNodeId(id);
+
+                Log.d("LLLL","YEs" + centralNodeId );
+
+                ENode eCentralNode = eNodeDao.getENodeWithId(centralNodeId);
+
+                if(eCentralNode == null) Log.d("LLLL","YEs" + eCentralNode.mainText);
+
+                centralNode = new CentralNode(eCentralNode.id,eCentralNode.styleId,eCentralNode.mainText,eCentralNode.attachedText);
+
+                ArrayDeque<ChildNode> processedNodes = new ArrayDeque<>();
+
+                List<ENode> list  = eNodeDao.getENodesWithParentId(centralNodeId);
+                List<ENode> list1 = new ArrayList<>();
+                List<ENode> list2 = new ArrayList<>();
+
+                // разделяем left и right son
+                for (int i = 0; i <list.size(); i++) {
+                    if(list.get(i).position < 0){
+                        list2.add(list.get(i));
+                    }
+                    else{
+                        list1.add(list.get(i));
+                    }
+                }
+
+                //обрабатываем right son
+                ENode [] tempENodeArr = new ENode[list1.size()];
+
+                ENode tempENode;
+                for (int i = 0; i < list1.size(); i++) {
+                    tempENodeArr[list1.get(i).position] = list1.get(i);
+                }
+
+                ChildNode tempChildNode;
+                for (int i = 0; i < list1.size(); i++) {
+                    tempENode = tempENodeArr[i];
+                    tempChildNode = new ChildNode(tempENode.id,tempENode.styleId,tempENode.mainText,tempENode.attachedText);
+                    mapNodes.add(tempChildNode);
+                    processedNodes.addLast(tempChildNode);
+                    centralNode.addRightSon(tempChildNode);
+                }
+
+                //обрабатываем left son
+                tempENodeArr = new ENode[list2.size()];
+
+                for (int i = 0; i < list2.size(); i++) {
+                    tempENodeArr[-list2.get(i).position] = list2.get(i);
+                }
+
+                for (int i = 0; i < list2.size(); i++) {
+                    tempENode = tempENodeArr[i];
+                    tempChildNode = new ChildNode(tempENode.id,tempENode.styleId,tempENode.mainText,tempENode.attachedText);
+                    mapNodes.add(tempChildNode);
+                    processedNodes.addLast(tempChildNode);
+                    centralNode.addLeftSon(tempChildNode);
+                }
+
+                ChildNode parent;
+                while (!processedNodes.isEmpty()){
+                    parent = processedNodes.pollFirst();
+
+                    list = eNodeDao.getENodesWithParentId(parent.getNodeId());
+                    tempENodeArr = new ENode[list.size()];
+
+                    for (int i = 0; i < list.size(); i++) {
+                        tempENodeArr[list.get(i).position] = list.get(i);
+                    }
+
+                    for (int i = 0; i < list.size(); i++) {
+                        tempENode = tempENodeArr[i];
+                        tempChildNode = new ChildNode(tempENode.id,tempENode.styleId,tempENode.mainText,tempENode.attachedText);
+                        mapNodes.add(tempChildNode);
+                        processedNodes.addLast(tempChildNode);
+                        parent.addSon(tempChildNode);
+                    }
+                }
+
+                getLastOperation().postValue(new Pair<Operation,Node>(Operation.MapOpened,null));
+            }
+        });
+
     }
 
     public void editMainText(Node node,String text){
@@ -216,46 +320,169 @@ public class MainViewModel extends ViewModel {
     }
 
     public void addRightSonOfCentralNode(){
-        ++id;
-        ChildNode added = new ChildNode(id,0,"node","node");
-        centralNode.addRightSon(added);
-        mapNodes.add(added);
-        getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,added));
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+                ENode eNode = new ENode();
+                eNode.parentId = centralNode.getNodeId();
+                eNode.styleId  = centralNode.getStyleId();
+                eNode.mapId    = mapId;
+                eNode.position = centralNode.getRightChildren().size();
+                eNode.mainText = " ";
+                eNode.attachedText = "";
+                long id = eNodeDao.insert(eNode);
+
+                ChildNode addedNode = new ChildNode(id,centralNode.getStyleId()," ","");
+                centralNode.addRightSon(addedNode);
+                mapNodes.add(addedNode);
+
+                getLastOperation().postValue(new Pair<Operation, Node>(Operation.NodeAdded,addedNode));
+
+            }
+        });
     }
 
     public void addLeftSonOfCentralNode(){
-        ++id;
-        ChildNode added = new ChildNode(id,0,"node","node");
-        centralNode.addLeftSon(added);
-        mapNodes.add(added);
-        getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,added));
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+                ENode eNode = new ENode();
+                eNode.parentId = centralNode.getNodeId();
+                eNode.styleId  = centralNode.getStyleId();
+                eNode.mapId    = mapId;
+                eNode.position = centralNode.getLeftChildren().size();
+                eNode.mainText = " ";
+                eNode.attachedText = "";
+                long id = eNodeDao.insert(eNode);
+
+                ChildNode addedNode = new ChildNode(id,centralNode.getStyleId()," ","");
+                centralNode.addLeftSon(addedNode);
+                mapNodes.add(addedNode);
+
+                getLastOperation().postValue(new Pair<Operation, Node>(Operation.NodeAdded,addedNode));
+
+            }
+        });
     }
 
-    public void addSon(ChildNode parent){
-        ++id;
-        ChildNode added = new ChildNode(id,0,"node","node");
-        parent.addSon(added);
-        mapNodes.add(added);
-        Log.d("Kr",mapNodes.size()+" ");
-        getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,added));
+    public void addSon(final ChildNode parent){
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+                ENode eNode = new ENode();
+                eNode.parentId = parent.getNodeId();
+                eNode.styleId  = parent.getStyleId();
+                eNode.mapId    = mapId;
+                eNode.position = parent.getChildren().size();
+                eNode.mainText = " ";
+                eNode.attachedText = "";
+                long id = eNodeDao.insert(eNode);
+
+                ChildNode addedNode = new ChildNode(id,parent.getStyleId()," ","");
+                parent.addSon(addedNode);
+                mapNodes.add(addedNode);
+
+                getLastOperation().postValue(new Pair<Operation, Node>(Operation.NodeAdded,addedNode));
+
+            }
+        });
 
     }
 
-    public void addUpBrother(ChildNode brother){
-        ++id;
-        ChildNode added = new ChildNode(id,0,"node","node");
-        brother.addBrotherUp(added);
-        mapNodes.add(added);
-        getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,added));
+    public void addUpBrother(final ChildNode brother){
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+                ENode eNode = new ENode();
+                Node parent = brother.getParent();
+                eNode.parentId = parent.getNodeId();
+                eNode.styleId  = parent.getStyleId();
+                eNode.mapId    = mapId;
+
+                int position;
+                ArrayList<ChildNode> children;
+                if(parent == centralNode){
+                    children = centralNode.getRightChildren();
+                    if(children.contains(brother)){
+                    }
+                    else {
+                        children = centralNode.getLeftChildren();
+                    }
+                }
+                else{
+                    ChildNode parentChildNode =(ChildNode)parent;
+                    children = parentChildNode.getChildren();
+                }
+                position = children.indexOf(brother);
+                eNode.position = position;
+                eNode.mainText = " ";
+                eNode.attachedText = "";
+                long id = eNodeDao.insert(eNode);
+
+                ChildNode addedNode = new ChildNode(id,parent.getStyleId()," ","");
+                children.add(position,addedNode);
+                addedNode.setParent(parent);
+
+                mapNodes.add(addedNode);
+
+                updatePosition(children);
+
+                getLastOperation().postValue(new Pair<Operation, Node>(Operation.NodeAdded,addedNode));
+
+            }
+        });
     }
 
-    public void addDownBrother(ChildNode brother){
-        ++id;
-        ChildNode added = new ChildNode(id,0,"node","node");
-        brother.addBrotherDown(added);
-        mapNodes.add(added);
-        getLastOperation().setValue(new Pair<Operation, Node>(Operation.NodeAdded,added));
+    public void addDownBrother(final ChildNode brother){
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ENodeDao eNodeDao = db.eNodeDao();
+                ENode eNode = new ENode();
+                Node parent = brother.getParent();
+                eNode.parentId = parent.getNodeId();
+                eNode.styleId  = parent.getStyleId();
+                eNode.mapId    = mapId;
+
+                int position;
+                ArrayList<ChildNode> children;
+                if(parent == centralNode){
+                    children = centralNode.getRightChildren();
+                    if(children.contains(brother)){
+                    }
+                    else {
+                        children = centralNode.getLeftChildren();
+                    }
+                }
+                else{
+                    ChildNode parentChildNode =(ChildNode)parent;
+                    children = parentChildNode.getChildren();
+                }
+                position = children.indexOf(brother);
+                eNode.position = position+1;
+                eNode.mainText = " ";
+                eNode.attachedText = "";
+                long id = eNodeDao.insert(eNode);
+
+                ChildNode addedNode = new ChildNode(id,parent.getStyleId()," ","");
+                children.add(position+1,addedNode);
+                addedNode.setParent(parent);
+
+                mapNodes.add(addedNode);
+
+                updatePosition(children);
+
+                getLastOperation().postValue(new Pair<Operation, Node>(Operation.NodeAdded,addedNode));
+
+            }
+        });
     }
+
+
 
     public void delNode(ChildNode node){
         node.getParent().delSon(node);
@@ -282,22 +509,22 @@ public class MainViewModel extends ViewModel {
     }
 
     public void copyNode(ChildNode node){
-        HashMap<Integer,ChildNode> newParents = new HashMap<>();
-        BranchIterator iterator = new BranchIterator(node);
-
-        ++id;
-        ChildNode nodeCopy = new ChildNode(id,node.getStyleId(),node.getMainText(),node.getAttachedText());
-        newParents.put(node.getNodeId(),nodeCopy);
-        iterator.next();
-        while (!iterator.atEnd()){
-            ChildNode childNode = iterator.next();
-            ++id;
-            ChildNode copy = new ChildNode(id,childNode.getStyleId(),childNode.getMainText(),childNode.getAttachedText());
-            newParents.get(childNode.getParent().getNodeId()).addSon(copy);
-            newParents.put(childNode.getNodeId(),copy);
-        }
-
-        copiedNode = nodeCopy;
+//        HashMap<Integer,ChildNode> newParents = new HashMap<>();
+//        BranchIterator iterator = new BranchIterator(node);
+//
+//        ++id;
+//        ChildNode nodeCopy = new ChildNode(id,node.getStyleId(),node.getMainText(),node.getAttachedText());
+//        newParents.put(node.getNodeId(),nodeCopy);
+//        iterator.next();
+//        while (!iterator.atEnd()){
+//            ChildNode childNode = iterator.next();
+//            ++id;
+//            ChildNode copy = new ChildNode(id,childNode.getStyleId(),childNode.getMainText(),childNode.getAttachedText());
+//            newParents.get(childNode.getParent().getNodeId()).addSon(copy);
+//            newParents.put(childNode.getNodeId(),copy);
+//        }
+//
+//        copiedNode = nodeCopy;
     }
 
     public void startPastingNode(Node node){
@@ -314,5 +541,12 @@ public class MainViewModel extends ViewModel {
         }
 
         getLastOperation().setValue(new Pair<Operation, Node>(Operation.PastingNode,temp));
+    }
+
+    private void updatePosition(ArrayList<ChildNode> children){
+        ENodeDao eNodeDao = db.eNodeDao();
+        for (int i = 0; i < children.size(); i++) {
+            eNodeDao.updatePosition(children.get(i).getNodeId(),i);
+        }
     }
 }

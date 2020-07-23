@@ -13,7 +13,6 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
@@ -136,10 +135,11 @@ public class WorkActivity extends AppCompatActivity implements EditTextDialogFra
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == REQUEST_CODE_ON_SHOW_MAPS_MANAGER){
             if(resultCode==RESULT_OK){
-                int mapId = data.getIntExtra("id",-1);
+                Bundle bundle = data.getExtras();
+                long mapId = bundle.getLong("id");
                 Log.d("SSS",mapId + " " + "MapId");
+                viewModel.openMap(mapId);
             }
-
         }
         else{
             super.onActivityResult(requestCode, resultCode, data);

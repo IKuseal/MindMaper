@@ -6,7 +6,7 @@ public class CentralNode extends Node {
     private ArrayList<ChildNode> rightChildren;
     private ArrayList<ChildNode> leftChildren;
 
-    public CentralNode(int nodeId, int styleId, String mainText, String attachedText) {
+    public CentralNode(long nodeId, long styleId, String mainText, String attachedText) {
         super(nodeId,styleId,mainText,attachedText);
         rightChildren = new ArrayList<>();
         leftChildren = new ArrayList<>();
